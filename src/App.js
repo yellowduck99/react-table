@@ -4,6 +4,7 @@ const App = () => {
 
     // Hook for table data
     const [data, setData] = useState();
+    const [isLoading, setIsLoading] = useState(true)
 
     // Fetching data from API and save to data
     useEffect(() => {
@@ -18,15 +19,18 @@ const App = () => {
     }, [])
 
     const fetchTable = async () => {
-        return fetch('/get')
+        return fetch('https://jsonplaceholder.typicode.com/posts')
         .then((res) => res.json())
         .then((data) => {
-            return data.output;
+            return data;
+        })
+        .finally(() => {
+            setIsLoading(false)
         })
     }
 
     // empty arr when not finished fetched
-    let keys = !data ? [] : Object.keys(data[0]);
+    let keys = isLoading ? [] : Object.keys(data[0]);
     
 
     // function of creating header of table
@@ -47,8 +51,8 @@ const App = () => {
 
     // main return 
     return (<div className='App' >
-        {!data ? 'loading'
-            : <table className='table table-striped ' >
+        {isLoading && <div>loading...</div>}
+        {data && <table className='table table-striped ' >
                 <tbody>
                     <tr>{header(keys)}</tr>
                     {data.map((json, index) => {
